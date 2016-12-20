@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qml-components/InsertWindow.qml</file>
+        <file>qml-components/window-components/PlayerEntryColumn.qml</file>
+        <file>qml-components/window-components/Separator.qml</file>
+    </qresource>
+</RCC>
