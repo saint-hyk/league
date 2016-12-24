@@ -94,7 +94,7 @@ Window {
 						var rs = tx.executeSql('SELECT Players.id, Players.name FROM Players');
 
 						var r = ""
-						for(var i = 0; i < rs.rows.length; i++) {
+						for (var i = 0; i < rs.rows.length; i++) {
 							r += rs.rows.item(i).id + ": " + rs.rows.item(i).name + "\n"
 						}
 						console.log(r)

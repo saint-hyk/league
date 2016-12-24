@@ -17,6 +17,8 @@ Column {
 		visible: false
 		modality: Qt.ApplicationModal
 
+		onVisibleChanged: if (visible) { newDataInput.text = '' }
+
 		TextField {
 			id: newDataInput
 			anchors.fill: parent
@@ -39,7 +41,31 @@ Column {
 			id: nameSelect
 			width: 120
 			anchors.verticalCenter: parent.verticalCenter
-			model: [ "Ali", "David", "Harold" ]
+			textRole: 'name'
+
+			Component.onCompleted: {
+				updateDatabase()
+			}
+
+			model: ListModel {
+				id: listModel
+			}
+
+			function updateDatabase() {
+				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+
+				db.transaction(
+					function(tx) {
+						var rs = tx.executeSql('SELECT id, name FROM Players');
+
+						for (var i = 0; i < rs.rows.length; ++i) {
+							if (nameSelect.find(rs.rows.item(i).name) === -1) {
+								nameSelect.model.append({'id': rs.rows.item(i).id, 'name': rs.rows.item(i).name})
+							}
+						}
+					}
+				)
+			}
 		}
 
 		Button {
@@ -56,14 +82,16 @@ Column {
 
 			signal newPlayer
 			onNewPlayer: {
+				newDataInput.accepted.disconnect(newPlayer)
 				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
 
 				db.transaction(
 					function(tx) {
-						tx.executeSql('INSERT INTO Players (name) VALUES ("' + newDataInput.text + '")');
+						tx.executeSql('INSERT INTO Players (name) VALUES ("' + newDataInput.text + '")'); //TODO: fix obvious SQL injection
 					}
 				)
 				newDataWindow.visible = false
+				nameSelect.updateDatabase()
 			}
 		}
 	}
@@ -89,7 +117,21 @@ Column {
 			text: "+"
 
 			onClicked: {
+				newDataWindow.visible = true
+				newDataWindow.title = qsTr("Enter New Team Name")
+				newDataInput.accepted.connect(newTeam)
+			}
 
+			signal newTeam
+			onNewTeam: {
+				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+
+				db.transaction(
+					function(tx) {
+						tx.executeSql('INSERT INTO Teams (name) VALUES ("' + newDataInput.text + '")');
+					}
+				)
+				newDataWindow.visible = false
 			}
 		}
 	}
