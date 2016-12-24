@@ -85,14 +85,20 @@ Window {
 
 				db.transaction(
 					function(tx) {
-						var x = 'INSERT INTO Games (date, player_one, player_two, team_one, team_two, goals_one, goals_two) VALUES (' +
+						var penaltiesData = "null, null"
+						if (playerEntryColumnA.penalties || playerEntryColumnB.penalties) {
+							penaltiesData = playerEntryColumnA.penalties + ', ' + playerEntryColumnB.penalties
+						}
+
+						var x = 'INSERT INTO Games (date, player_one, player_two, team_one, team_two, goals_one, goals_two, penalties_one, penalties_two) VALUES (' +
 								'"' + dateButton.text + '", ' +
 								playerEntryColumnA.getSelectedPlayer().id + ', ' +
 								playerEntryColumnB.getSelectedPlayer().id + ', ' +
 								playerEntryColumnA.getSelectedTeam().id + ', ' +
 								playerEntryColumnB.getSelectedTeam().id + ', ' +
 								playerEntryColumnA.goals + ', ' +
-								playerEntryColumnB.goals + ')'
+								playerEntryColumnB.goals + ', ' +
+								penaltiesData + ')'
 						tx.executeSql(x);
 					}
 				)
