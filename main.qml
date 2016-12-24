@@ -36,10 +36,6 @@ ApplicationWindow {
 
 		db.transaction(
 			function(tx) {
-				tx.executeSql('DROP TABLE IF EXISTS Players');
-				tx.executeSql('DROP TABLE IF EXISTS Teams');
-				tx.executeSql('DROP TABLE IF EXISTS Games');
-
 				tx.executeSql('CREATE TABLE IF NOT EXISTS Players(id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL)');
 				tx.executeSql('CREATE TABLE IF NOT EXISTS Teams(id INTEGER PRIMARY KEY, name TEXT NOT NULL)');
 				tx.executeSql(

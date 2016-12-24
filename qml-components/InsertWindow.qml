@@ -80,24 +80,20 @@ Window {
 			anchors.verticalCenter: parent.verticalCenter
 			text: qsTr("Add Game")
 
-			//onClicked: console.log(insertWindow.width + ", " + insertWindow.height)
 			onClicked: {
 				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
 
 				db.transaction(
 					function(tx) {
-						tx.executeSql('INSERT INTO Players (name) VALUES ("Harold"), ("Ali")');
-						tx.executeSql('INSERT INTO Teams (name) VALUES ("ARS"), ("CXI")');
-						tx.executeSql('INSERT INTO Games (date, player_one, player_two, team_one, team_two, goals_one, goals_two) VALUES ("2016-12-17", 1, 2, 1, 2, 5, 2)');
-
-						//var rs = tx.executeSql('SELECT Games.id, Games.date, Player_One.name AS player_one, Player_Two.name AS player_two, Games.goals_one, Games.goals_two FROM Games JOIN Players AS Player_One ON Player_One.id = Games.player_one JOIN Players AS Player_Two ON Player_Two.id = Games.player_two');
-						var rs = tx.executeSql('SELECT Players.id, Players.name FROM Players');
-
-						var r = ""
-						for (var i = 0; i < rs.rows.length; i++) {
-							r += rs.rows.item(i).id + ": " + rs.rows.item(i).name + "\n"
-						}
-						console.log(r)
+						var x = 'INSERT INTO Games (date, player_one, player_two, team_one, team_two, goals_one, goals_two) VALUES (' +
+								'"' + dateButton.text + '", ' +
+								playerEntryColumnA.getSelectedPlayer().id + ', ' +
+								playerEntryColumnB.getSelectedPlayer().id + ', ' +
+								playerEntryColumnA.getSelectedTeam().id + ', ' +
+								playerEntryColumnB.getSelectedTeam().id + ', ' +
+								playerEntryColumnA.goals + ', ' +
+								playerEntryColumnB.goals + ')'
+						tx.executeSql(x);
 					}
 				)
 			}
@@ -123,6 +119,82 @@ Window {
 
 		PlayerEntryColumn {
 			id: playerEntryColumnB
+		}
+
+		Separator {
+			height: parent.height - 20
+			anchors.verticalCenter: parent.verticalCenter
+		}
+
+		Column {
+			id: addingColumn
+			padding: 5
+			spacing: 5
+
+			signal newPlayer
+			onNewPlayer: {
+				newDataInput.accepted.disconnect(newPlayer)
+				insertNewData('Players', newDataInput.text);
+				playerEntryColumnA.updateNames()
+				playerEntryColumnB.updateNames()
+			}
+
+			signal newTeam
+			onNewTeam: {
+				newDataInput.accepted.disconnect(newTeam)
+				insertNewData('Teams', newDataInput.text);
+				playerEntryColumnA.updateTeams()
+				playerEntryColumnB.updateTeams()
+			}
+
+			function insertNewData(table, data) {
+				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+
+				db.transaction(
+					function(tx) {
+						tx.executeSql('INSERT INTO ' + table + ' (name) VALUES ("' + data + '")'); //TODO: fix obvious SQL injection
+					}
+				)
+				newDataWindow.visible = false
+			}
+
+			function updateDataEntryWindow(type, callback) {
+				newDataWindow.visible = true
+				newDataWindow.title = qsTr("Enter New " + type + " Name")
+				newDataInput.accepted.connect(callback)
+			}
+
+			Button {
+				id: newNameButton
+				width: 30
+				text: "+"
+
+				onClicked: addingColumn.updateDataEntryWindow("Player", addingColumn.newPlayer)
+			}
+
+			Button {
+				id: newTeamButton
+				width: 30
+				text: "+"
+
+				onClicked: addingColumn.updateDataEntryWindow("Team", addingColumn.newTeam)
+			}
+
+			Window {
+				id: newDataWindow
+				width: 250
+				height: 25
+				visible: false
+				modality: Qt.ApplicationModal
+
+				onVisibleChanged: if (visible) { newDataInput.text = '' }
+
+				TextField {
+					id: newDataInput
+					anchors.fill: parent
+					focus: true
+				}
+			}
 		}
 	}
 }

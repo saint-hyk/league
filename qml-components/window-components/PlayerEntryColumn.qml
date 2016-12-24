@@ -10,20 +10,39 @@ Column {
 
 	property bool activePenalties: false
 
-	Window {
-		id: newDataWindow
-		width: 250
-		height: 25
-		visible: false
-		modality: Qt.ApplicationModal
+	// TODO: error checking
+	function getSelectedPlayer() { return nameSelect.model.get(nameSelect.currentIndex) }
+	function getSelectedTeam() { return teamSelect.model.get(teamSelect.currentIndex) }
+	property alias goals: scoreTextField.text
+	property var penalties: activePenalties ? penaltiesTextField.text : null
 
-		onVisibleChanged: if (visible) { newDataInput.text = '' }
+	function updateNames() {
+		updateFromDatabase('Players', nameSelect)
+	}
 
-		TextField {
-			id: newDataInput
-			anchors.fill: parent
-			focus: true
-		}
+	function updateTeams() {
+		updateFromDatabase('Teams', teamSelect)
+	}
+
+	function updateFromDatabase(table, combobox) {
+		var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+
+		db.transaction(
+			function(tx) {
+				var rs
+				try {
+					rs = tx.executeSql('SELECT id, name FROM ' + table);
+				} catch (e) {
+					return
+				}
+
+				for (var i = 0; i < rs.rows.length; ++i) {
+					if (combobox.find(rs.rows.item(i).name) === -1) {
+						combobox.model.append({'id': rs.rows.item(i).id, 'name': rs.rows.item(i).name})
+					}
+				}
+			}
+		)
 	}
 
 	Row {
@@ -44,55 +63,10 @@ Column {
 			textRole: 'name'
 
 			Component.onCompleted: {
-				updateDatabase()
+				root.updateFromDatabase('Players', this)
 			}
 
-			model: ListModel {
-				id: listModel
-			}
-
-			function updateDatabase() {
-				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
-
-				db.transaction(
-					function(tx) {
-						var rs = tx.executeSql('SELECT id, name FROM Players');
-
-						for (var i = 0; i < rs.rows.length; ++i) {
-							if (nameSelect.find(rs.rows.item(i).name) === -1) {
-								nameSelect.model.append({'id': rs.rows.item(i).id, 'name': rs.rows.item(i).name})
-							}
-						}
-					}
-				)
-			}
-		}
-
-		Button {
-			id: newNameButton
-			width: 30
-			anchors.verticalCenter: parent.verticalCenter
-			text: "+"
-
-			onClicked: {
-				newDataWindow.visible = true
-				newDataWindow.title = qsTr("Enter New Player Name")
-				newDataInput.accepted.connect(newPlayer)
-			}
-
-			signal newPlayer
-			onNewPlayer: {
-				newDataInput.accepted.disconnect(newPlayer)
-				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
-
-				db.transaction(
-					function(tx) {
-						tx.executeSql('INSERT INTO Players (name) VALUES ("' + newDataInput.text + '")'); //TODO: fix obvious SQL injection
-					}
-				)
-				newDataWindow.visible = false
-				nameSelect.updateDatabase()
-			}
+			model: ListModel { }
 		}
 	}
 
@@ -106,33 +80,16 @@ Column {
 		}
 
 		ComboBox {
+			id: teamSelect
 			width: nameSelect.width
 			anchors.verticalCenter: parent.verticalCenter
-			model: [ "ARS", "CXI", "FCB" ]
-		}
+			textRole: 'name'
 
-		Button {
-			width: newNameButton.width
-			anchors.verticalCenter: parent.verticalCenter
-			text: "+"
-
-			onClicked: {
-				newDataWindow.visible = true
-				newDataWindow.title = qsTr("Enter New Team Name")
-				newDataInput.accepted.connect(newTeam)
+			Component.onCompleted: {
+				root.updateFromDatabase('Teams', this)
 			}
 
-			signal newTeam
-			onNewTeam: {
-				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
-
-				db.transaction(
-					function(tx) {
-						tx.executeSql('INSERT INTO Teams (name) VALUES ("' + newDataInput.text + '")');
-					}
-				)
-				newDataWindow.visible = false
-			}
+			model: ListModel { }
 		}
 	}
 
@@ -146,6 +103,7 @@ Column {
 		}
 
 		TextField {
+			id: scoreTextField
 			width: nameSelect.width
 			anchors.verticalCenter: parent.verticalCenter
 		}
@@ -162,6 +120,7 @@ Column {
 		}
 
 		TextField {
+			id: penaltiesTextField
 			width: nameSelect.width
 			anchors.verticalCenter: parent.verticalCenter
 			enabled: root.activePenalties
