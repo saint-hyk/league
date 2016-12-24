@@ -12,25 +12,6 @@ ApplicationWindow {
 	title: qsTr("League - Tournament Management Software")
 	color: "white"
 
-	menuBar: MenuBar {
-		Menu {
-			title: "Actions"
-			MenuItem {
-				text: qsTr("Insert New Game...")
-				shortcut: "Ctrl+N"
-				onTriggered: insertWindow.show()
-			}
-			MenuItem { text: qsTr("Custom Search") }
-			MenuSeparator { }
-			MenuItem { text: qsTr("About") }
-			MenuItem { text: qsTr("Change Language") }
-			MenuItem {
-				text: qsTr("Exit")
-				onTriggered: Qt.quit()
-			}
-		}
-	}
-
 	Component.onCompleted: {
 		var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
 
@@ -56,6 +37,25 @@ ApplicationWindow {
 					);
 			}
 		)
+	}
+
+	menuBar: MenuBar {
+		Menu {
+			title: "Actions"
+			MenuItem {
+				text: qsTr("Insert New Game...")
+				shortcut: "Ctrl+N"
+				onTriggered: insertWindow.show()
+			}
+			MenuItem { text: qsTr("Custom Search") }
+			MenuSeparator { }
+			MenuItem { text: qsTr("About") }
+			MenuItem { text: qsTr("Change Language") }
+			MenuItem {
+				text: qsTr("Exit")
+				onTriggered: Qt.quit()
+			}
+		}
 	}
 
 	InsertWindow {
