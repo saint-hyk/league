@@ -80,7 +80,7 @@ Window {
 			anchors.verticalCenter: parent.verticalCenter
 			text: qsTr("Add Game")
 
-			onClicked: {
+			onClicked: { //TODO: Feedback that game was added
 				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
 
 				db.transaction(
