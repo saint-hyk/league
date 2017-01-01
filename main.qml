@@ -14,28 +14,39 @@ ApplicationWindow {
 	title: qsTr("League - Tournament Management Software")
 
 	Component.onCompleted: {
-		var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+		var db = LocalStorage.openDatabaseSync("league-db",
+		                                       "1.0",
+		                                       "Database of games recorded using League",
+		                                       1000000)
 
 		db.transaction(
 			function(tx) {
-				tx.executeSql('CREATE TABLE IF NOT EXISTS Players(id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL)');
-				tx.executeSql('CREATE TABLE IF NOT EXISTS Teams(id INTEGER PRIMARY KEY, name TEXT NOT NULL)');
+				tx.executeSql(
+'CREATE TABLE IF NOT EXISTS Players(id INTEGER PRIMARY KEY NOT NULL,
+                                    name TEXT NOT NULL)'
+				);
+
+				tx.executeSql(
+'CREATE TABLE IF NOT EXISTS Teams(id INTEGER PRIMARY KEY,
+                                  name TEXT NOT NULL)'
+				);
+
 				tx.executeSql(
 'CREATE TABLE IF NOT EXISTS Games(id INTEGER PRIMARY KEY,
-                         date TEXT NOT NULL,
-                         player_one INT NOT NULL,
-                         player_two INT NOT NULL,
-                         team_one INT NOT NULL,
-                         team_two INT NOT NULL,
-                         goals_one INT NOT NULL,
-                         goals_two INT NOT NULL,
-                         penalties_one INT,
-                         penalties_two INT,
-                         FOREIGN KEY(player_one) REFERENCES Players(id),
-                         FOREIGN KEY(player_two) REFERENCES Players(id),
-                         FOREIGN KEY(team_one) REFERENCES Teams(id),
-                         FOREIGN KEY(team_two) REFERENCES Teams(id))'
-					);
+                                  date TEXT NOT NULL,
+                                  player_one INT NOT NULL,
+                                  player_two INT NOT NULL,
+                                  team_one INT NOT NULL,
+                                  team_two INT NOT NULL,
+                                  goals_one INT NOT NULL,
+                                  goals_two INT NOT NULL,
+                                  penalties_one INT,
+                                  penalties_two INT,
+                                  FOREIGN KEY(player_one) REFERENCES Players(id),
+                                  FOREIGN KEY(player_two) REFERENCES Players(id),
+                                  FOREIGN KEY(team_one) REFERENCES Teams(id),
+                                  FOREIGN KEY(team_two) REFERENCES Teams(id))'
+				);
 			}
 		)
 	}
@@ -83,7 +94,7 @@ ApplicationWindow {
 			sortOrder: tableView.sortIndicatorOrder
 			sortCaseSensitivity: Qt.CaseInsensitive
 			sortRole: listModel.count > 0 ?
-						tableView.getColumn(tableView.sortIndicatorColumn).role : ""
+					tableView.getColumn(tableView.sortIndicatorColumn).role : ""
 		}
 
 		TableViewColumn {
@@ -157,36 +168,58 @@ ApplicationWindow {
 		}
 
 		function updateFromDatabase(listModel) {
-			var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+			var db = LocalStorage.openDatabaseSync(
+				"league-db",
+				"1.0",
+				"Database of games recorded using League",
+				1000000
+			)
 
 			db.transaction(
 				function(tx) {
 					var rs
 					try {
 						rs = tx.executeSql(
-'SELECT Games.id, Games.date, Player_One.name AS player_one, Player_Two.name AS player_two, Team_One.name As team_one, Team_Two.name AS team_two, Games.goals_one, Games.goals_two, Games.penalties_one, Games.penalties_two ' +
-'FROM Games ' +
-'JOIN Players AS Player_One ON Player_One.id = Games.player_one ' +
-'JOIN Players AS Player_Two ON Player_Two.id = Games.player_two ' +
-'JOIN Teams AS Team_One ON Team_One.id = Games.team_one ' +
-'JOIN Teams AS Team_Two ON Team_Two.id = Games.team_two');
+'SELECT Games.id, Games.date,
+	Player_One.name AS player_one, Player_Two.name AS player_two,
+	Team_One.name As team_one, Team_Two.name AS team_two,
+	Games.goals_one, Games.goals_two,
+	Games.penalties_one, Games.penalties_two
+FROM Games
+JOIN Players AS Player_One ON Player_One.id = Games.player_one
+JOIN Players AS Player_Two ON Player_Two.id = Games.player_two
+JOIN Teams AS Team_One ON Team_One.id = Games.team_one
+JOIN Teams AS Team_Two ON Team_Two.id = Games.team_two'
+						);
 					} catch (e) {
 						console.log("")
 						return
 					}
 
 					var playerDict = {}
-					for (var i = 0; i < rs.rows.length; ++i) {
-						console.log(rs.rows.item(i).id, rs.rows.item(i).player_one, rs.rows.item(i).player_two, rs.rows.item(i).team_one, rs.rows.item(i).team_two, rs.rows.item(i).goals_one, rs.rows.item(i).goals_two, rs.rows.item(i).penalties_one, rs.rows.item(i).penalties_two)
-
-						var players = [rs.rows.item(i).player_one, rs.rows.item(i).player_two]
-						var teams = [rs.rows.item(i).team_one, rs.rows.item(i).team_two]
-						var goals = [rs.rows.item(i).goals_one, rs.rows.item(i).goals_two]
-						var penalties = [rs.rows.item(i).penalties_one, rs.rows.item(i).penalties_two]
+					var i
+					for (i = 0; i < rs.rows.length; ++i) {
+						var players =
+								[rs.rows.item(i).player_one, rs.rows.item(i).player_two]
+						var teams =
+								[rs.rows.item(i).team_one, rs.rows.item(i).team_two]
+						var goals =
+								[rs.rows.item(i).goals_one, rs.rows.item(i).goals_two]
+						var penalties =
+								[rs.rows.item(i).penalties_one, rs.rows.item(i).penalties_two]
 
 						for (var j = 0; j < 2; ++j) {
 							if (!(players[j] in playerDict)) {
-								playerDict[players[j]] = {name: players[j], games: 0, wins: 0, losses: 0, goals: 0, goals_against: 0, goal_difference: 0, win_difference: 0}
+								playerDict[players[j]] = {
+									name: players[j],
+									games: 0,
+									wins: 0,
+									losses: 0,
+									goals: 0,
+									goals_against: 0,
+									goal_difference: 0,
+									win_difference: 0
+								}
 							}
 
 							playerDict[players[j]].games++
@@ -202,14 +235,18 @@ ApplicationWindow {
 						}
 					}
 
-					for (var key in playerDict) {
-						playerDict[key].goal_difference = playerDict[key].goals - playerDict[key].goals_against
-						playerDict[key].win_difference = playerDict[key].wins - playerDict[key].losses
+					var key
+
+					for (key in playerDict) {
+						playerDict[key].goal_difference =
+								playerDict[key].goals - playerDict[key].goals_against
+						playerDict[key].win_difference =
+								playerDict[key].wins - playerDict[key].losses
 					}
 
 					var tuples = [];
 
-					for (var key in playerDict) tuples.push([key, playerDict[key]]);
+					for (key in playerDict) tuples.push([key, playerDict[key]]);
 
 					tuples.sort(function(a, b) {
 						a = a[1];
@@ -218,14 +255,12 @@ ApplicationWindow {
 						return a < b ? -1 : (a > b ? 1 : 0);
 					});
 
-					for (var i = 0; i < tuples.length; i++) {
+					for (i = 0; i < tuples.length; i++) {
 						var key = tuples[i][0];
 						var value = tuples[i][1];
-
-						console.log(key, value)
 					}
 
-					for (var key in playerDict) {
+					for (key in playerDict) {
 						listModel.append(playerDict[key])
 					}
 				}

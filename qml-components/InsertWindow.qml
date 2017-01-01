@@ -81,16 +81,24 @@ Window {
 			text: qsTr("Add Game")
 
 			onClicked: { //TODO: Feedback that game was added
-				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+				var db = LocalStorage.openDatabaseSync("league-db",
+				                                       "1.0",
+				                                       "Database of games recorded using League",
+				                                       1000000)
 
 				db.transaction(
 					function(tx) {
 						var penaltiesData = "null, null"
 						if (playerEntryColumnA.penalties || playerEntryColumnB.penalties) {
-							penaltiesData = playerEntryColumnA.penalties + ', ' + playerEntryColumnB.penalties
+							penaltiesData = playerEntryColumnA.penalties + ', ' +
+									playerEntryColumnB.penalties
 						}
 
-						var x = 'INSERT INTO Games (date, player_one, player_two, team_one, team_two, goals_one, goals_two, penalties_one, penalties_two) VALUES (' +
+						var x = 'INSERT INTO Games (date,
+									player_one, player_two,
+									team_one, team_two,
+									goals_one, goals_two,
+									penalties_one, penalties_two) VALUES (' +
 								'"' + dateButton.text + '", ' +
 								playerEntryColumnA.getSelectedPlayer().id + ', ' +
 								playerEntryColumnB.getSelectedPlayer().id + ', ' +
@@ -154,11 +162,15 @@ Window {
 			}
 
 			function insertNewData(table, data) {
-				var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+				var db = LocalStorage.openDatabaseSync("league-db",
+				                                       "1.0",
+				                                       "Database of games recorded using League",
+				                                       1000000)
 
 				db.transaction(
 					function(tx) {
-						tx.executeSql('INSERT INTO ' + table + ' (name) VALUES ("' + data + '")'); //TODO: fix obvious SQL injection
+						//TODO: fix obvious SQL injection
+						tx.executeSql('INSERT INTO ' + table + ' (name) VALUES ("' + data + '")');
 					}
 				)
 				newDataWindow.visible = false

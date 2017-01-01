@@ -85,7 +85,8 @@ QString SortFilterProxyModel::filterString() const {
 }
 
 void SortFilterProxyModel::setFilterString(const QString &filter) {
-	setFilterRegExp(QRegExp(filter, filterCaseSensitivity(), static_cast<QRegExp::PatternSyntax>(filterSyntax())));
+	setFilterRegExp(QRegExp(filter, filterCaseSensitivity(),
+			static_cast<QRegExp::PatternSyntax>(filterSyntax())));
 }
 
 SortFilterProxyModel::FilterSyntax SortFilterProxyModel::filterSyntax() const {
@@ -93,7 +94,9 @@ SortFilterProxyModel::FilterSyntax SortFilterProxyModel::filterSyntax() const {
 }
 
 void SortFilterProxyModel::setFilterSyntax(SortFilterProxyModel::FilterSyntax syntax) {
-	setFilterRegExp(QRegExp(filterString(), filterCaseSensitivity(), static_cast<QRegExp::PatternSyntax>(syntax)));
+	setFilterRegExp(QRegExp(filterString(),
+			filterCaseSensitivity(),
+			static_cast<QRegExp::PatternSyntax>(syntax)));
 }
 
 QJSValue SortFilterProxyModel::get(int idx) const {
@@ -104,7 +107,9 @@ QJSValue SortFilterProxyModel::get(int idx) const {
 		QHashIterator<int, QByteArray> it(roles);
 		while (it.hasNext()) {
 			it.next();
-			value.setProperty(QString::fromUtf8(it.value()), data(index(idx, 0), it.key()).toString());
+			value.setProperty(QString::fromUtf8(it.value()),
+					data(index(idx, 0),
+					it.key()).toString());
 		}
 	}
 	return value;

@@ -25,7 +25,10 @@ Column {
 	}
 
 	function updateFromDatabase(table, combobox) {
-		var db = LocalStorage.openDatabaseSync("league-db", "1.0", "Database of games recorded using League", 1000000)
+		var db = LocalStorage.openDatabaseSync("league-db",
+		                                       "1.0",
+		                                       "Database of games recorded using League",
+		                                       1000000)
 
 		db.transaction(
 			function(tx) {
@@ -38,7 +41,10 @@ Column {
 
 				for (var i = 0; i < rs.rows.length; ++i) {
 					if (combobox.find(rs.rows.item(i).name) === -1) {
-						combobox.model.append({'id': rs.rows.item(i).id, 'name': rs.rows.item(i).name})
+						combobox.model.append({
+								'id': rs.rows.item(i).id,
+								'name': rs.rows.item(i).name
+						})
 					}
 				}
 			}
