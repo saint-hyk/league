@@ -30,8 +30,15 @@ Window {
 				right: parent.right
 			}
 
-			onSelectedDateChanged: dateButton.text = selectedDate.toDateString()
+			onSelectedDateChanged: updateDateButton()
 			onDoubleClicked: calendarWindow.visible = false
+
+			function updateDateButton() {
+				dateButton.text =
+						selectedDate.toLocaleDateString(Qt.locale("en_US"), "yyyy'.'MM'.'dd")
+			}
+
+			Component.onCompleted: updateDateButton()
 		}
 	}
 
@@ -52,7 +59,7 @@ Window {
 		Button {
 			id: dateButton
 			anchors.verticalCenter: parent.verticalCenter
-			text: new Date().toDateString()
+
 
 			onClicked: calendarWindow.show()
 		}

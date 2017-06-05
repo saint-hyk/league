@@ -4,5 +4,6 @@
         <file>qml-components/InsertWindow.qml</file>
         <file>qml-components/window-components/PlayerEntryColumn.qml</file>
         <file>qml-components/window-components/Separator.qml</file>
+        <file>qml-components/GameListWindow.qml</file>
     </qresource>
 </RCC>

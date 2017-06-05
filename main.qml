@@ -59,7 +59,15 @@ ApplicationWindow {
 				shortcut: "Ctrl+N"
 				onTriggered: insertWindow.show()
 			}
-			MenuItem { text: qsTr("Custom Search") }
+			MenuItem {
+				text: qsTr("Game List")
+				shortcut: "Ctrl+L"
+				onTriggered: gameListWindow.show()
+			}
+			MenuItem {
+				text: qsTr("Custom Search")
+				shortcut: "Ctrl+S"
+			}
 			MenuSeparator { }
 			MenuItem { text: qsTr("About") }
 			MenuItem { text: qsTr("Change Language") }
@@ -75,6 +83,11 @@ ApplicationWindow {
 		visible: false
 	}
 
+	GameListWindow {
+		id: gameListWindow
+		visible: false
+	}
+
 	ListModel {
 		id: listModel
 	}
@@ -86,6 +99,7 @@ ApplicationWindow {
 
 		sortIndicatorColumn: 8
 		sortIndicatorVisible: true
+		sortIndicatorOrder: Qt.DescendingOrder
 
 		model: SortFilterProxyModel {
 			id: proxyModel
@@ -119,14 +133,12 @@ ApplicationWindow {
 			horizontalAlignment: Text.AlignRight
 		}
 
-
 		TableViewColumn {
 			title: qsTr("W")
 			role: "wins"
 			width: 40
 			horizontalAlignment: Text.AlignRight
 		}
-
 
 		TableViewColumn {
 			title: qsTr("L")
@@ -135,14 +147,12 @@ ApplicationWindow {
 			horizontalAlignment: Text.AlignRight
 		}
 
-
 		TableViewColumn {
 			title: qsTr("F")
 			role: "goals"
 			width: 40
 			horizontalAlignment: Text.AlignRight
 		}
-
 
 		TableViewColumn {
 			title: qsTr("A")
@@ -151,14 +161,12 @@ ApplicationWindow {
 			horizontalAlignment: Text.AlignRight
 		}
 
-
 		TableViewColumn {
 			title: qsTr("GD")
 			role: "goal_difference"
 			width: 40
 			horizontalAlignment: Text.AlignRight
 		}
-
 
 		TableViewColumn {
 			title: qsTr("WD")
@@ -180,8 +188,7 @@ ApplicationWindow {
 					var rs
 					try {
 						rs = tx.executeSql(
-'SELECT Games.id, Games.date,
-	Player_One.name AS player_one, Player_Two.name AS player_two,
+'SELECT Player_One.name AS player_one, Player_Two.name AS player_two,
 	Team_One.name As team_one, Team_Two.name AS team_two,
 	Games.goals_one, Games.goals_two,
 	Games.penalties_one, Games.penalties_two
@@ -192,13 +199,12 @@ JOIN Teams AS Team_One ON Team_One.id = Games.team_one
 JOIN Teams AS Team_Two ON Team_Two.id = Games.team_two'
 						);
 					} catch (e) {
-						console.log("")
+						console.log("Failure loading games.")
 						return
 					}
 
 					var playerDict = {}
-					var i
-					for (i = 0; i < rs.rows.length; ++i) {
+					for (var i = 0; i < rs.rows.length; ++i) {
 						var players =
 								[rs.rows.item(i).player_one, rs.rows.item(i).player_two]
 						var teams =
@@ -235,32 +241,12 @@ JOIN Teams AS Team_Two ON Team_Two.id = Games.team_two'
 						}
 					}
 
-					var key
-
-					for (key in playerDict) {
+					for (var key in playerDict) {
 						playerDict[key].goal_difference =
 								playerDict[key].goals - playerDict[key].goals_against
 						playerDict[key].win_difference =
 								playerDict[key].wins - playerDict[key].losses
-					}
 
-					var tuples = [];
-
-					for (key in playerDict) tuples.push([key, playerDict[key]]);
-
-					tuples.sort(function(a, b) {
-						a = a[1];
-						b = b[1];
-
-						return a < b ? -1 : (a > b ? 1 : 0);
-					});
-
-					for (i = 0; i < tuples.length; i++) {
-						var key = tuples[i][0];
-						var value = tuples[i][1];
-					}
-
-					for (key in playerDict) {
 						listModel.append(playerDict[key])
 					}
 				}
