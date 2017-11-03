@@ -16,11 +16,9 @@ Window {
 	Window {
 		id: calendarWindow
 		width: 400
-		height: 200
+		height: calendar.height
 		visible: false
 		title: qsTr("Select Date")
-
-		onActiveChanged: if (!active) { visible = false }
 
 		Calendar {
 			id: calendar
