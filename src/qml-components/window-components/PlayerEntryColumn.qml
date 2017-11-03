@@ -27,10 +27,7 @@ Column {
 	}
 
 	function updateFromDatabase(table, combobox) {
-		var db = LocalStorage.openDatabaseSync("league-db",
-		                                       "1.0",
-		                                       "Database of games recorded using League",
-		                                       1000000)
+		var db = LocalStorage.openDatabaseSync(dbName, dbVer, dbDesc, dbEstSize)
 
 		db.transaction(
 			function(tx) {

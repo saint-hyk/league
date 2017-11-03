@@ -13,11 +13,13 @@ ApplicationWindow {
 	height: 480
 	title: qsTr("League - Tournament Management Software")
 
+	property string dbName: "league-db"
+	property string dbVer: "1.0"
+	property string dbDesc: "Database of games recorded using League"
+	property int dbEstSize: 1000000
+
 	Component.onCompleted: {
-		var db = LocalStorage.openDatabaseSync("league-db",
-		                                       "1.0",
-		                                       "Database of games recorded using League",
-		                                       1000000)
+		var db = LocalStorage.openDatabaseSync(dbName, dbVer, dbDesc, dbEstSize)
 
 		db.transaction(
 			function(tx) {
@@ -201,12 +203,7 @@ ApplicationWindow {
 		}
 
 		function updateFromDatabase(listModel) {
-			var db = LocalStorage.openDatabaseSync(
-				"league-db",
-				"1.0",
-				"Database of games recorded using League",
-				1000000
-			)
+			var db = LocalStorage.openDatabaseSync(dbName, dbVer, dbDesc, dbEstSize)
 
 			db.transaction(
 				function(tx) {
