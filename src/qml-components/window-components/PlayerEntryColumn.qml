@@ -111,6 +111,8 @@ Column {
 			id: scoreTextField
 			width: nameSelect.width
 			anchors.verticalCenter: parent.verticalCenter
+			inputMask: "90"
+			onActiveFocusChanged: if (activeFocus) { cursorPosition = 0; }
 		}
 	}
 
@@ -129,6 +131,8 @@ Column {
 			width: nameSelect.width
 			anchors.verticalCenter: parent.verticalCenter
 			enabled: root.activePenalties
+			inputMask: "90"
+			onActiveFocusChanged: if (activeFocus) { cursorPosition = 0; }
 		}
 	}
 }
