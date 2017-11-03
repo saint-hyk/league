@@ -123,56 +123,81 @@ ApplicationWindow {
 		TableViewColumn {
 			title: qsTr("Player")
 			role: "name"
+			delegate: Text {
+				text: styleData.value
+				leftPadding: 10
+			}
 			width: 80
 		}
 
 		TableViewColumn {
 			title: qsTr("G")
 			role: "games"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("W")
 			role: "wins"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("L")
 			role: "losses"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("F")
 			role: "goals"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("A")
 			role: "goals_against"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("GD")
 			role: "goal_difference"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		TableViewColumn {
 			title: qsTr("WD")
 			role: "win_difference"
+			delegate: Text {
+				text: styleData.value
+				horizontalAlignment: Text.AlignRight
+			}
 			width: 40
-			horizontalAlignment: Text.AlignRight
 		}
 
 		function updateFromDatabase(listModel) {
