@@ -8,7 +8,9 @@ Column {
 	padding: 5
 	spacing: 5
 
-	property bool activePenalties: false
+	// TODO: This should be tied to the goals being the same for both teams
+	//       (handle in InsertWindow.qml)
+	property bool activePenalties: true
 
 	// TODO: error checking
 	function getSelectedPlayer() { return nameSelect.model.get(nameSelect.currentIndex) }

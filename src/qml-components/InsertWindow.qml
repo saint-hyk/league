@@ -58,22 +58,7 @@ Window {
 			id: dateButton
 			anchors.verticalCenter: parent.verticalCenter
 
-
 			onClicked: calendarWindow.show()
-		}
-
-		Separator {
-			height: topRow.height - 20
-			anchors.verticalCenter: parent.verticalCenter
-		}
-
-		Button {
-			anchors.verticalCenter: parent.verticalCenter
-			text: qsTr("Toggle Penalties")
-			onClicked: {
-				playerEntryColumnA.activePenalties = !playerEntryColumnA.activePenalties
-				playerEntryColumnB.activePenalties = !playerEntryColumnB.activePenalties
-			}
 		}
 
 		Separator {
